@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClockRotateLeft, faGears, faMapLocationDot, faSliders } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faClockRotateLeft, faGears, faMapLocationDot, faSliders } from '@fortawesome/free-solid-svg-icons';
 import logo from '../images/tracking.jpg';
-import profile from '../images/profile.jpg';
 import '../App.css';
 
 function Nav() {
@@ -27,7 +26,9 @@ function Nav() {
                 </Link>
             </div>
             <div className='profile'>
-                <img src={profile} alt='Profile' />
+                <Link to='/profile' className='profile' title='Profile'>
+                    <FontAwesomeIcon icon={faCircleUser} size='2xl' />
+                </Link>
             </div>
         </div>
     );

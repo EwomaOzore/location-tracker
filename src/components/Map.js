@@ -6,6 +6,6 @@ function Map() {
             <div>Map Content Goes Here</div>
         </div>
     );
-};
+}
 
 export default Map;
