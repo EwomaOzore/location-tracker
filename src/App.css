@@ -37,7 +37,16 @@
 }
 
 .btn {
-  margin-bottom: 50px;
+  margin-bottom: 40px;
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+}
+
+.btn:hover {
+  color: white;
+  background-color: #214d33;
+  cursor: pointer;
 }
 
 .profile {
