@@ -5,6 +5,7 @@ const logger = require("morgan");
 const dbConnect = require("./src/config/database");
 const authRoute = require("./src/routes/authRoute");
 const settingRoute = require("./src/routes/settingRoute");
+const locationRoute = require("./src/routes/locationRoute");
 
 dbConnect();
 
@@ -21,6 +22,7 @@ const port = process.env.PORT || 3000;
 
 app.use("/api", authRoute)
 app.use("/api/settings", settingRoute)
+app.use("/api/location", locationRoute)
 
 
 app.listen(port, () => {
