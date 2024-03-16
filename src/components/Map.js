@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import '../styles/Map.css'
+import Nav from './Nav';
 
 function Map() {
     const [userLocation, setUserLocation] = useState(null);
@@ -38,17 +40,20 @@ function Map() {
     });
 
     return (
-        <MapContainer center={center} zoom={15} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {userLocation && (
-                <Marker position={userLocation} icon={icon}>
-                    <Popup>You are here!</Popup>
-                </Marker>
-            )}
-        </MapContainer>
+        <>
+            <Nav />
+            <MapContainer center={center} zoom={4} style={{ height: '100%', width: '100%' }}>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {userLocation && (
+                    <Marker position={userLocation} icon={icon}>
+                        <Popup>You are here!</Popup>
+                    </Marker>
+                )}
+            </MapContainer>
+        </>
     );
 }
 

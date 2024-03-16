@@ -1,11 +1,16 @@
 import React from 'react';
+import Nav from './Nav';
 
 function Settings() {
     return (
-        <div className='content'>
-            <h2>Settings</h2>
-            <p>This is the settings page. Customize your app settings here.</p>
-        </div>
+        <>
+            <Nav />
+            <div className='content'>
+
+                <h2>Settings</h2>
+                <p>This is the settings page. Customize your app settings here.</p>
+            </div>
+        </>
     );
 }
 

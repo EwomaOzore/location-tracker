@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faClockRotateLeft, faGears, faMapLocationDot, faSliders } from '@fortawesome/free-solid-svg-icons';
 import logo from '../images/tracking.jpg';
-import '../App.css';
+import '../styles/Nav.css';
 
 function Nav() {
     return (
