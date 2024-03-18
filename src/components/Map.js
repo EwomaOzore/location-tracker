@@ -1,60 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../styles/Map.css'
 import Nav from './Nav';
 
-function Map() {
-    const [userLocation, setUserLocation] = useState(null);
+const Map = () => {
+    const [map, setMap] = useState(null);
+    const [marker, setMarker] = useState(null);
+    const [circle, setCircle] = useState(null);
 
     useEffect(() => {
-        if (navigator.geolocation) {
-            const watchId = navigator.geolocation.watchPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setUserLocation({ lat: latitude, lng: longitude });
-                },
-                (error) => {
-                    console.error('Error getting user location:', error.message);
-                }
-            );
+        const initializeMap = () => {
+            const leafletMap = L.map('map').setView([0, 0], 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(leafletMap);
+            setMap(leafletMap);
+        };
 
-            // Cleanup watchPosition on component unmount
-            return () => {
-                navigator.geolocation.clearWatch(watchId);
-            };
-        } else {
-            console.error('Geolocation is not supported by this browser.');
-        }
+        initializeMap();
     }, []);
 
-    const defaultCenter = { lat: 0, lng: 0 };
-    const center = userLocation || defaultCenter;
+    useEffect(() => {
+        const watchPosition = () => {
+            if (!navigator.geolocation) {
+                console.log("Your browser doesn't support geolocation feature!");
+            } else {
+                const id = setInterval(() => {
+                    navigator.geolocation.getCurrentPosition(getPosition);
+                }, 2000);
+                return () => clearInterval(id);
+            }
+        };
 
-    const icon = new L.Icon({
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-    });
+        const getPosition = (position) => {
+            const { latitude, longitude, accuracy } = position.coords;
+
+            if (map) {
+                setMarker(prevMarker => {
+                    if (prevMarker) map.removeLayer(prevMarker);
+                    return L.marker([latitude, longitude]);
+                });
+                setCircle(prevCircle => {
+                    if (prevCircle) map.removeLayer(prevCircle);
+                    return L.circle([latitude, longitude], { radius: accuracy });
+                });
+            } else {
+                console.log("Map is not initialized yet.");
+            }
+        };
+
+        watchPosition();
+    }, [map]);
+
+    useEffect(() => {
+        if (map && marker && circle) {
+            marker.addTo(map);
+            circle.addTo(map);
+
+            const featureGroup = L.featureGroup([marker, circle]).addTo(map);
+            map.fitBounds(featureGroup.getBounds());
+        }
+    }, [map, marker, circle]);
 
     return (
         <>
             <Nav />
-            <MapContainer center={center} zoom={4} style={{ height: '100%', width: '100%' }}>
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                {userLocation && (
-                    <Marker position={userLocation} icon={icon}>
-                        <Popup>You are here!</Popup>
-                    </Marker>
-                )}
-            </MapContainer>
+            <div id="map" style={{ width: '100%', height: '100vh' }}></div>
         </>
-    );
-}
+    )
+};
 
 export default Map;
