@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Map from './components/Map';
 import Settings from './components/Settings';
@@ -10,28 +10,20 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-
   return (
-    <Router>
-      <div className={authenticated ? 'app-container' : 'auth-container'}>
+    <div className='app-container'>
+      <Router>
         <Routes>
-          <Route path='/login' element={<Login setAuthenticated={setAuthenticated} />} />
+          <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<Signup />} />
-          {authenticated ? (
-            <>
-              <Route path='/map' element={<Map />} />
-              <Route path='/settings' element={<Settings />} />
-              <Route path='/preferences' element={<Preferences />} />
-              <Route path='/history' element={<History />} />
-              <Route path='/profile' element={<Profile />} />
-            </>
-          ) : (
-            <Route index element={<Navigate to='/login' />} />
-          )}
+          <Route path='/map' element={<Map />} />
+          <Route path='/settings' element={<Settings />} />
+          <Route path='/preferences' element={<Preferences />} />
+          <Route path='/history' element={<History />} />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 

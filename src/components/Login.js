@@ -1,46 +1,55 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/UserSlice';
 import '../styles/Login.css';
 
-function Login({ setAuthenticated }) {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
-    const navigate = useNavigate();
+function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post('http://localhost:5500/api/login', formData);
-            const { token } = response.data.data;
-            localStorage.setItem('token', token);
-            setAuthenticated(true);
-            navigate('/profile');
-        } catch (error) {
-            console.error('Login failed:', error);
+    const { loading, error } = useSelector((state) => state.user);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleLoginEvent = (e) => {
+        e.preventDefault();
+        let userCredentials = {
+            email, password
         }
-    };
+        dispatch(loginUser(userCredentials)).then((result) => {
+            if (result.payload) {
+                setEmail('');
+                setPassword('');
+                navigate('/profile')
+            }
+        })
+    }
 
     return (
         <div className='login-container'>
             <h2>Login</h2>
-            <form>
+            <form onSubmit={handleLoginEvent}>
                 <label>Email:</label>
                 <input
                     type='email'
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <label>Password:</label>
                 <input
                     type='password'
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type='button' onClick={handleLogin}>
-                    Login
+                <button type='submit'>
+                    {loading ? 'Loading...' : 'Login'}
                 </button>
+                {error && (
+                    <div className='' role='alert'>{error}</div>
+                )}
             </form>
             <p>
                 Don't have an account? <Link to='/signup'>Sign up</Link>
