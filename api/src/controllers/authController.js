@@ -28,9 +28,11 @@ const registerUser = async (req, res) => {
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '30d' })
 
         await newUser.save()
-
+        
         const user = { ...newUser._doc }
         delete user.password
+
+        res.setHeader('Authorization', 'Bearer ' + token);
 
         return res.status(200).json({ message: "User Successfully Created an Account!", status: 200, success: true, data: { user, token } })
     } catch (error) {
@@ -62,6 +64,8 @@ const userLogin = async (req, res) => {
 
         const user = { ...existingUser._doc }
         delete user.password
+
+        res.setHeader('Authorization', 'Bearer ' + token);
 
         return res.status(200).json({ message: "User Successfully Logged In...", status: 200, success: true, data: { user, token } })
 

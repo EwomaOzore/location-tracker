@@ -1,61 +1,72 @@
+// Login.js
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/UserSlice';
+import axios from 'axios';
+import LoginForm from './LoginForm';
+import SignupForm from './Signup';
 import '../styles/Login.css';
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [activePanel, setActivePanel] = useState('sign-in');
 
     const { loading, error } = useSelector((state) => state.user);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const handleLoginEvent = (e) => {
-        e.preventDefault();
-        let userCredentials = {
-            email, password
-        }
-        dispatch(loginUser(userCredentials)).then((result) => {
+
+    const handleLoginEvent = (email, password) => {
+        dispatch(loginUser({ email, password })).then((result) => {
             if (result.payload) {
-                setEmail('');
-                setPassword('');
-                navigate('/profile')
+                navigate('/profile');
             }
-        })
+        });
     }
 
+    const handleSignup = async (firstName, lastName, username, email, password) => {
+        try {
+            await axios.post('http://localhost:5500/api/signup', {
+                firstName,
+                lastName,
+                username,
+                email,
+                password
+            });
+            navigate('/login');
+        } catch (error) {
+            console.error('Signup failed:', error);
+        }
+    };
+
+    const togglePanel = () => {
+        setActivePanel(activePanel === 'sign-in' ? 'sign-up' : 'sign-in');
+    };
+
     return (
-        <div className='login-container'>
-            <h2>Login</h2>
-            <form onSubmit={handleLoginEvent}>
-                <label>Email:</label>
-                <input
-                    type='email'
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <label>Password:</label>
-                <input
-                    type='password'
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type='submit'>
-                    {loading ? 'Loading...' : 'Login'}
-                </button>
-                {error && (
-                    <div className='' role='alert'>{error}</div>
+        <div className="container" id="container">
+            <div className={`form-container ${activePanel}`}>
+                {activePanel === 'sign-up' ? (
+                    <SignupForm handleSignup={handleSignup} />
+                ) : (
+                    <LoginForm handleLoginEvent={handleLoginEvent} loading={loading} error={error} />
                 )}
-            </form>
-            <p>
-                Don't have an account? <Link to='/signup'>Sign up</Link>
-            </p>
+            </div>
+            <div className="toggle-container">
+                <div className="toggle">
+                    <div className={`toggle-panel toggle-left ${activePanel === 'sign-in' ? 'active' : ''}`}>
+                        <h1>{activePanel === 'sign-in' ? 'Welcome Back!' : 'Hello, Friend!'}</h1>
+                        <p>{activePanel === 'sign-in' ? 'Enter your personal details to use all of site features' : 'Register with your personal details to use all of site features'}</p>
+                    </div>
+                    <div className={`toggle-panel toggle-right ${activePanel === 'sign-up' ? 'active' : ''}`}>
+                        <h1>{activePanel === 'sign-in' ? 'Hello, Friend!' : 'Welcome Back!'}</h1>
+                        <p>{activePanel === 'sign-in' ? 'Register with your personal details to use all of site features' : 'Enter your personal details to use all of site features'}</p>
+                        <button className="hidden" onClick={togglePanel}>{activePanel === 'sign-in' ? 'Sign Up' : 'Sign In'}</button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
-}
+};
 
 export default Login;
